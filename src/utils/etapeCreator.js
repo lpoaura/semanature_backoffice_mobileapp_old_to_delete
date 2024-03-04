@@ -63,7 +63,7 @@ class JeuInfo extends Etape {
             type: this.type,
             nom: this.nom,
             image_url: this.image_url,
-            texte: this.texte
+            texte: this.texte,
         }
         return data;
     }
@@ -82,7 +82,7 @@ class JeuBlague extends Etape {
             type: this.type,
             nom: this.nom,
             image_url: this.image_url,
-            texte: this.texte
+            texte: this.texte,
         }
         return data;
     }
@@ -129,13 +129,14 @@ class JeuQCM extends Etape {
 
 // eslint-disable-next-line no-unused-vars
 class JeuIntrus extends Etape {
-    constructor(ordre, nom, question, images_tab, index_bonneReponse, titreSiBonneReponse, titreSiMauvaiseReponse, texteApresReponse) {
+    constructor(ordre, nom, question, images_tab, legende_tab, index_bonneReponse, titreSiBonneReponse, titreSiMauvaiseReponse, texteApresReponse) {
         // Commun attributes
         super(ordre, TypeEtape.jeu_intrus, nom, '');
 
         // Specific attributes
         this.question = question;
         this.images_tab = images_tab;
+        this.legende_tab = legende_tab;
         this.index_bonneReponse = index_bonneReponse;
         this.titreSiBonneReponse = titreSiBonneReponse;
         this.titreSiMauvaiseReponse = titreSiMauvaiseReponse; 
@@ -155,10 +156,16 @@ class JeuIntrus extends Etape {
                 this.images_tab[2],
                 this.images_tab[3]
             ],
+            legende_tab: [
+                this.legende_tab[0],
+                this.legende_tab[1],
+                this.legende_tab[2],
+                this.legende_tab[3]
+            ],
             index_bonneReponse: this.index_bonneReponse,
             titreSiBonneReponse: this.titreSiBonneReponse,
             titreSiMauvaiseReponse: this.titreSiMauvaiseReponse,
-            texteApresReponse: this.texteApresReponse
+            texteApresReponse: this.texteApresReponse,
         }
 
         return data;
@@ -167,7 +174,7 @@ class JeuIntrus extends Etape {
 
 // eslint-disable-next-line no-unused-vars
 class JeuCesar extends Etape {
-    constructor(ordre, nom, image_url, question, texteBrut, decalage, titreSiBonneReponse, titreSiMauvaiseReponse, texteApresReponse) {
+    constructor(ordre, nom, image_url, legende, question, texteBrut, decalage, titreSiBonneReponse, titreSiMauvaiseReponse, texteApresReponse) {
         // Commun attributes
         super(ordre, TypeEtape.jeu_cesar, nom, image_url);
 
@@ -191,7 +198,7 @@ class JeuCesar extends Etape {
             decalage: this.decalage,
             titreSiBonneReponse: this.titreSiBonneReponse,
             titreSiMauvaiseReponse: this.titreSiMauvaiseReponse,
-            texteApresReponse: this.texteApresReponse
+            texteApresReponse: this.texteApresReponse,
         }
         return data;
     }
@@ -221,7 +228,7 @@ class JeuPyramide extends Etape {
             nombre: this.nombre,
             titreSiBonneReponse: this.titreSiBonneReponse,
             titreSiMauvaiseReponse: this.titreSiMauvaiseReponse,
-            texteApresReponse: this.texteApresReponse
+            texteApresReponse: this.texteApresReponse,
         }
 
         return data;
@@ -246,7 +253,7 @@ class JeuCode extends Etape {
             nom: this.nom,
             image_url: this.image_url,
             texte: this.texte,
-            code: this.code
+            code: this.code,
         }
         return data;
     }
@@ -276,7 +283,7 @@ class JeuCharade extends Etape {
             reponse: this.reponse,
             titreSiBonneReponse: this.titreSiBonneReponse,
             titreSiMauvaiseReponse: this.titreSiMauvaiseReponse,
-            texteApresReponse: this.texteApresReponse
+            texteApresReponse: this.texteApresReponse,
         }
         return data;
     }
@@ -306,7 +313,7 @@ class JeuCompterImage extends Etape {
             reponse: this.reponse,
             titreSiBonneReponse: this.titreSiBonneReponse,
             titreSiMauvaiseReponse: this.titreSiMauvaiseReponse,
-            texteApresReponse: this.texteApresReponse
+            texteApresReponse: this.texteApresReponse,
         }
         return data;
     }
@@ -336,7 +343,7 @@ class JeuRebus extends Etape {
             reponse: this.reponse,
             titreSiBonneReponse: this.titreSiBonneReponse,
             titreSiMauvaiseReponse: this.titreSiMauvaiseReponse,
-            texteApresReponse: this.texteApresReponse
+            texteApresReponse: this.texteApresReponse,
         }
         return data;
     }
@@ -355,7 +362,7 @@ class JeuEcogeste extends Etape {
             type: this.type,
             nom: this.nom,
             image_url: this.image_url,
-            texte: this.texte
+            texte: this.texte,
         }
         return data;
     }
@@ -377,7 +384,7 @@ class TransiInfo extends Etape {
             type: this.type,
             nom: this.nom,
             image_url: this.image_url,
-            texte: this.texte
+            texte: this.texte,
         }
 
         return data;
@@ -404,7 +411,7 @@ class TransiGPS extends Etape {
             image_url: this.image_url,
             texte: this.texte,
             latitude: this.latitude,
-            longitude: this.longitude
+            longitude: this.longitude,
         }
 
         return data;
