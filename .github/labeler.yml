@@ -4,20 +4,12 @@ ci-cd:
 
 dependencies:
   - changed-files:
-      - any-glob-to-any-file: ["requirements.txt", "requirements/*.txt"]
+      - any-glob-to-any-file: ["package.json", "package-lock.json"]
 documentation:
   - changed-files:
       - any-glob-to-any-file: ["docs/**/*"]
 
-packaging:
-  - changed-files:
-      - any-glob-to-any-file: ["requirements/packaging.txt", "setup.py"]
-
-quality:
-  - changed-files:
-      - any-glob-to-any-file: ["tests/**/*"]
-
 tooling:
   - changed-files:
       - any-glob-to-any-file:
-          [".pre-commit-config.yaml", ".vscode/**/*", "setup.cfg"]
+          [".pre-commit-config.yaml", ".vscode/**/*"]
