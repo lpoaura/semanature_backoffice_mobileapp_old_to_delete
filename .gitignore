@@ -1,6 +1,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/vuejs,visualstudiocode,firebase,node
 # Edit at https://www.toptal.com/developers/gitignore?templates=vuejs,visualstudiocode,firebase,node
 
+
+.env
+
 ### Firebase ###
 .idea
 **/node_modules/*
