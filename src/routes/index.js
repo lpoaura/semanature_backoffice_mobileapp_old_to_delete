@@ -1,6 +1,7 @@
 /* eslint-disable */
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from '../views/Login.vue';
+import SignIn from '../views/SignIn.vue'; 
 import GestionCommune from '../views/GestionCommune.vue';
 import EditCommune from '../views/commune/EditCommune.vue';
 import CreateCommune from '../views/commune/CreateCommune.vue';
@@ -65,6 +66,11 @@ const routes = [
     path: '/',
     name: 'login',
     component: Login
+  },
+  {
+    path: '/signIn',
+    name: 'signIn',
+    component: SignIn 
   },
   {
     path: '/editcommune/:commune',

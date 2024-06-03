@@ -2,7 +2,9 @@ import { createStore } from 'vuex'
 import createPersistedState from 'vuex-persistedstate'
 
 import { auth } from './firebaseConfig'
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth'
+import { sendSignInLinkToEmail } from "firebase/auth";
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
+
 
 const store = createStore({
   plugins: [createPersistedState()],
@@ -27,20 +29,24 @@ const store = createStore({
     }
   },
   actions: {
-    async register(context, { email, password, name }) {
-      const response = await createUserWithEmailAndPassword(auth, email, password)
-      if (response) {
-        context.commit('SET_USER', response.user)
-        response.user.updateProfile({ displayName: name })
-      } else {
-        throw new Error('Unable to register user')
-      }
+    async register(context, { email, password}) {
+      
+      await sendSignInLinkToEmail(auth, "isaeorn7@gmail.com", {url: 'http://localhost:8080/', handleCodeInApp: true,})
+      .then(() => {
+        console.log(auth)
+      })
+      .catch((error) => {
+        console.log(error.message)
+      });
+
+      return password, email;
     },
 
     async logIn(context, { email, password }) {
       const response = await signInWithEmailAndPassword(auth, email, password)
       if (response) {
         context.commit('SET_USER', response.user)
+        context.commit('SET_LOGGED_IN', true)
       } else {
         throw new Error('login failed')
       }
