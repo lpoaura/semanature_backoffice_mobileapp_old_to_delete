@@ -23,7 +23,7 @@ export default {
 }
 
 .router-view {
-  padding: 10px;
+  padding: 0px;
   padding-top: 0%;
   white-space: pre-line;
 

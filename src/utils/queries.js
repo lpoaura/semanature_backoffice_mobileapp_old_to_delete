@@ -382,3 +382,31 @@ export async function deleteEtapeInParcours(id_parcours, id_etape, data_etapes){
     console.log("L'étape n'a pas été trouvée dans les données étapes et n'a donc pas pu être supprimée");
   }
 }
+
+
+export async function addUser(userId, nickname, role, email){
+  try {
+    // Ajout d'une nouveau document dans la collection "commune" avec comme identifiant le nom en minuscule
+    await setDoc(doc(db, "utilisateur", (userId)), {
+      nickname: nickname,
+      role: role,
+      email: email,
+    });
+  } catch(e) {
+    console.error("Error adding document : ", e);
+  } 
+}
+
+export async function getUserInfo(email){
+  const usersRef = collection(db, 'utilisateur');
+  const q = query(usersRef, where('email', '==', email));
+
+  const querySnapshot = await getDocs(q);
+  let userData = null;
+  
+  querySnapshot.forEach((doc) => {
+    userData = doc.data();
+  }); 
+
+  return userData; 
+}

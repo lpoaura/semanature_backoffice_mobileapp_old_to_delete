@@ -1,8 +1,10 @@
 <template>
+   <div v-if="error" class="">{{ error }}</div>
   <div class="container">
     <form class="form-signin" @submit.prevent="signIn">       
       <h2 class="form-signin-heading">Création d'un compte</h2>
-      <input type="text" v-model="email" class="form-control" name="email" placeholder="Email" required="" autofocus="" />
+      <input type="nickname" v-model="nickname" class="form-control" name="nickname" placeholder="Pseudonyme" required="" autofocus="" />
+      <input type="text" v-model="email" class="form-control" name="email" placeholder="Email" required="" />
       <input type="password" v-model="password" class="form-control" name="password" placeholder="Mot de passe " required=""/>      
       <button id="sendBtn" type="submit">Envoyer une demande</button>   
     </form>
@@ -19,21 +21,25 @@ export default {
   setup() {
     const email = ref('')
     const password = ref('')
+    const nickname = ref('')
+    const error = ref(null)
     const router = useRouter()
 
     const signIn = async () => {
+
       try {
         await store.dispatch('register', {
+          nickname: nickname.value,
+          role: "user",
           email: email.value, 
           password: password.value
         });
         router.push('/')
       } catch (err) {
-        console.log(err);
+        error.value = err.message
       }
     }
-
-    return { email, password, signIn };
+    return { email, password, nickname, signIn };
   }
 };
 </script>
@@ -69,5 +75,7 @@ export default {
 #sendBtn:hover{
     background-color: rgb(12, 78, 129);
 }
+
+
 
 </style>

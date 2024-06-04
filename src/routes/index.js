@@ -322,7 +322,7 @@ import store from '@/store';
 
 router.beforeEach((to, from, next) => {
   // Vérifiez si la route nécessite une authentification / s'il ne s'agit pas d'admin
-  const requiresAuth = to.name != "login";
+  const requiresAuth = to.name != "login" && to.name != "signIn"
   // Si la route nécessite une authentification et l'utilisateur n'est pas connecté
   if (requiresAuth && !store.getters.user.loggedIn) {
     next('/'); // Redirigez l'utilisateur vers la page de connexion

@@ -2,9 +2,10 @@ import { createStore } from 'vuex'
 import createPersistedState from 'vuex-persistedstate'
 
 import { auth } from './firebaseConfig'
-import { sendSignInLinkToEmail } from "firebase/auth";
+///import { sendSignInLinkToEmail } from "firebase/auth";
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
-
+import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { addUser } from './utils/queries'
 
 const store = createStore({
   plugins: [createPersistedState()],
@@ -29,17 +30,13 @@ const store = createStore({
     }
   },
   actions: {
-    async register(context, { email, password}) {
-      
-      await sendSignInLinkToEmail(auth, "isaeorn7@gmail.com", {url: 'http://localhost:8080/', handleCodeInApp: true,})
-      .then(() => {
-        console.log(auth)
+    register(context, { nickname, role, email, password }) {
+        
+      createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        context.commit('SET_LOGGED_IN', false)
+        addUser(userCredential.user.uid, nickname, role, email, password)
       })
-      .catch((error) => {
-        console.log(error.message)
-      });
-
-      return password, email;
     },
 
     async logIn(context, { email, password }) {
@@ -51,21 +48,21 @@ const store = createStore({
         throw new Error('login failed')
       }
     },
-
     async logOut(context) {
       await signOut(auth)
       context.commit('SET_USER', null)
+      context.commit('SET_LOGGED_IN', false)
     },
 
     async fetchUser(context, user) {
-      context.commit("SET_LOGGED_IN", user !== null);
+      context.commit("SET_LOGGED_IN", user !== null)
       if (user) {
         context.commit("SET_USER", {
           displayName: user.displayName,
           email: user.email
         });
       } else {
-        context.commit("SET_USER", null);
+        context.commit("SET_USER", null)
       }
     }
   }

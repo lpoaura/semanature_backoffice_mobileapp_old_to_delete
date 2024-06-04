@@ -1,4 +1,5 @@
 <template>
+  <Navbar />
   <div class="center-div">
     <h2 class="text-xl my-4" align="center">
       Gestion de communes
@@ -27,9 +28,16 @@ import { useRouter } from "vue-router";
 import { computed } from "vue";
 import { ref } from 'vue'
 import { getAllCommunes } from '../utils/queries.js'
+import Navbar from "@/components/Navbar.vue";
+
+
 
 export default {
   name: "GestionCommuneComponent",
+
+  components:  {
+    Navbar,
+  },
 
   setup() {
     const commune = ref('')
@@ -78,6 +86,6 @@ v-row {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  width: 20%
+  width: 20%; 
 }
 </style>
