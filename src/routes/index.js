@@ -54,6 +54,7 @@ import editCharade from '../views/editetapes/editCharade.vue'
 import editCompterimage from '../views/editetapes/editCompterImage.vue'
 import editRebus from '../views/editetapes/editRebus.vue'
 import editEcogeste from '../views/editetapes/editEcogeste.vue'
+import demande from '@/views/demande.vue';
 
 
 const routes = [
@@ -310,6 +311,11 @@ const routes = [
     path: '/transistate',
     name: 'transistate',
     component: transistate
+  },
+  {
+    path: '/demande',
+    name: 'demande',
+    component: demande
   }
 
 ]

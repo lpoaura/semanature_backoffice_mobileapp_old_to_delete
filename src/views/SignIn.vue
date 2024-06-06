@@ -28,7 +28,7 @@ export default {
     const signIn = async () => {
 
       try {
-        await store.dispatch('register', {
+        await store.dispatch('demande', {
           nickname: nickname.value,
           role: "user",
           email: email.value, 

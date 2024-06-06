@@ -2,17 +2,20 @@ import { createStore } from 'vuex'
 import createPersistedState from 'vuex-persistedstate'
 
 import { auth } from './firebaseConfig'
-///import { sendSignInLinkToEmail } from "firebase/auth";
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
-import { addUser } from './utils/queries'
+import { addDemande, addUser } from './utils/queries'
+import { getUserInfo } from './utils/queries'
 
 const store = createStore({
   plugins: [createPersistedState()],
   state: {
     user: {
       loggedIn: false,
-      data: null
+      data: null,
+      role: null, 
+      nickname: null, 
+      email: null
     }
   },
 
@@ -27,23 +30,38 @@ const store = createStore({
     },
     SET_LOGGED_IN(state, value) {
       state.user.loggedIn = value;
+    }, 
+    SET_ROLE(state, value){
+      state.user.role = value
+    }, 
+    SET_EMAIL(state, value){
+      state.user.email = value
+    },
+    SET_NICKNAME(state, value){
+      state.user.nickname = value
     }
   },
   actions: {
-    register(context, { nickname, role, email, password }) {
-        
+    register(context, { nickname, role, email, password }) {    
       createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         context.commit('SET_LOGGED_IN', false)
-        addUser(userCredential.user.uid, nickname, role, email, password)
+        addUser(userCredential.user.uid, nickname, role, email)
       })
     },
-
+    async demande(context, { nickname, role, email, password }){
+      addDemande(nickname, role, email, password)
+    },
     async logIn(context, { email, password }) {
       const response = await signInWithEmailAndPassword(auth, email, password)
       if (response) {
+        const userData = await getUserInfo(response.user.email)
+        console.log(userData)
         context.commit('SET_USER', response.user)
         context.commit('SET_LOGGED_IN', true)
+        context.commit('SET_ROLE', userData.role)
+        context.commit('SET_EMAIL', userData.email)
+        context.commit('SET_NICKNAME', userData.nickname)
       } else {
         throw new Error('login failed')
       }
@@ -52,6 +70,9 @@ const store = createStore({
       await signOut(auth)
       context.commit('SET_USER', null)
       context.commit('SET_LOGGED_IN', false)
+      context.commit('SET_ROLE', null)
+      context.commit('SET_EMAIL', null)
+      context.commit('SET_NICKNAME', null)
     },
 
     async fetchUser(context, user) {

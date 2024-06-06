@@ -397,6 +397,20 @@ export async function addUser(userId, nickname, role, email){
   } 
 }
 
+export async function addDemande(nickname, role, email, password){
+  try {
+    // Ajout d'une nouveau document dans la collection "commune" avec comme identifiant le nom en minuscule
+    await setDoc(doc(db, "demande", (email)), {
+      nickname: nickname,
+      role: role,
+      email: email,
+      password
+    });
+  } catch(e) {
+    console.error("Error adding document : ", e);
+  } 
+}
+
 export async function getUserInfo(email){
   const usersRef = collection(db, 'utilisateur');
   const q = query(usersRef, where('email', '==', email));

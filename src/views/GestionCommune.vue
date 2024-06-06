@@ -30,8 +30,6 @@ import { ref } from 'vue'
 import { getAllCommunes } from '../utils/queries.js'
 import Navbar from "@/components/Navbar.vue";
 
-
-
 export default {
   name: "GestionCommuneComponent",
 

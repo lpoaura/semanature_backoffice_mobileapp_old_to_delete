@@ -7,16 +7,20 @@
       <div id="name-container">
         <p v-if="nickname" class="name">{{ nickname }}</p>
       </div>
+      <div v-if="role==='admin'" id="disconnect-btn-container">
+        <button id="request-btn" @click="gererDemande" role="link">Demande</button>
+      </div>
       <div id="disconnect-btn-container">
         <button id="disconnect-btn" @click="Logout">Déconnection</button>
       </div>
     </div>
+    
   </nav>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
-import { getUserInfo } from '@/utils/queries.js'
+import { ref } from 'vue'
+// import { getUserInfo } from '@/utils/queries.js'
 import store from '@/store'
 import { useRouter } from "vue-router"
 
@@ -24,20 +28,17 @@ export default {
 name: "NavBar",
 
   setup() {
-    const nickname = ref('')
+
+    const nickname = store.state.user.nickname
+    const role = store.state.user.role
     const error = ref(null)
     const router = useRouter()
 
-    const fetchUserNickname =  async () => {
-      try {
-        const userData = await getUserInfo(store.getters.user.data.email)
-        if (userData) {
-          nickname.value = userData.nickname
-        }
-        }catch (err) {
-        console.error("Error fetching user data: ", err)
+    const gererDemande = async () => {
+      if (role == "admin"){
+        router.push("/demande")
       }
-    };
+    }
 
     const Logout = async () => {
       try {
@@ -49,11 +50,7 @@ name: "NavBar",
       }
     }
 
-    onMounted(() => {
-      fetchUserNickname();
-    });
-
-    return { nickname, Logout };
+    return { role, nickname, Logout, gererDemande}
   }
 };
 </script>
@@ -87,6 +84,22 @@ nav{
 #disconnect-btn:hover{
   color: white; 
   background-color: rgb(108, 117, 125); 
+}
+
+#request-btn{
+  font-size: 10px; 
+  padding: 7px 15px; 
+  color: rgb(34, 197 ,94);
+  border: 2px solid rgb(34, 197, 94);
+  background-color: white; 
+  border-radius: 5px; 
+  cursor: pointer; 
+  transition: 0.15s; 
+}
+
+#request-btn:hover{
+  color: white; 
+  background-color: rgb(34, 197, 94); 
 }
 
 #right-side-container{
