@@ -392,6 +392,8 @@ export async function addUser(userId, nickname, role, email){
       role: role,
       email: email,
     });
+
+    await deleteDemande(email); 
   } catch(e) {
     console.error("Error adding document : ", e);
   } 
@@ -406,9 +408,24 @@ export async function addDemande(nickname, role, email, password){
       email: email,
       password
     });
+
   } catch(e) {
     console.error("Error adding document : ", e);
   } 
+}
+
+export async function deleteDemande(email){
+  const documentPath = "demande/" + email;
+  console.log(documentPath)
+  const docRef = doc(db, documentPath);
+
+  deleteDoc(docRef)
+  .then(() => {
+    console.log("Document supprimé avec succès !");
+  })
+  .catch((error) => {
+    console.error("Erreur lors de la suppression du document : ", error);
+  });
 }
 
 export async function getUserInfo(email){

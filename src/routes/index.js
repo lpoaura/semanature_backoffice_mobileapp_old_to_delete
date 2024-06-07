@@ -333,7 +333,11 @@ router.beforeEach((to, from, next) => {
   if (requiresAuth && !store.getters.user.loggedIn) {
     next('/'); // Redirigez l'utilisateur vers la page de connexion
   } else {
-    next(); // Permettez l'accès à la route
+    if(to.name == "demande" && store.getters.user.role != "admin"){
+      next("/gestioncommune")
+    }else{
+      next(); // Permettez l'accès à la route
+    }
   }
 });
 export default router

@@ -1,13 +1,13 @@
 <template>
   <nav>
     <div id="left-side-container">
-      <p>Backoffice Scrute la nature</p>
+      <p><a href="/gestioncommune">Backoffice Scrute la nature</a></p>
     </div>
     <div id="right-side-container">
       <div id="name-container">
         <p v-if="nickname" class="name">{{ nickname }}</p>
       </div>
-      <div v-if="role==='admin'" id="disconnect-btn-container">
+      <div v-if="role==='admin' && route.path != '/demande'" id="disconnect-btn-container">
         <button id="request-btn" @click="gererDemande" role="link">Demande</button>
       </div>
       <div id="disconnect-btn-container">
@@ -22,7 +22,7 @@
 import { ref } from 'vue'
 // import { getUserInfo } from '@/utils/queries.js'
 import store from '@/store'
-import { useRouter } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 
 export default {
 name: "NavBar",
@@ -33,6 +33,7 @@ name: "NavBar",
     const role = store.state.user.role
     const error = ref(null)
     const router = useRouter()
+    const route = useRoute()
 
     const gererDemande = async () => {
       if (role == "admin"){
@@ -50,7 +51,7 @@ name: "NavBar",
       }
     }
 
-    return { role, nickname, Logout, gererDemande}
+    return { role, nickname, Logout, gererDemande, route}
   }
 };
 </script>

@@ -44,9 +44,12 @@ const store = createStore({
   actions: {
     register(context, { nickname, role, email, password }) {    
       createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        context.commit('SET_LOGGED_IN', false)
-        addUser(userCredential.user.uid, nickname, role, email)
+      .then(() => {
+        addUser(email, nickname, role, email)
+
+      })
+      .catch((error) => {
+        console.log(error)
       })
     },
     async demande(context, { nickname, role, email, password }){
@@ -56,7 +59,6 @@ const store = createStore({
       const response = await signInWithEmailAndPassword(auth, email, password)
       if (response) {
         const userData = await getUserInfo(response.user.email)
-        console.log(userData)
         context.commit('SET_USER', response.user)
         context.commit('SET_LOGGED_IN', true)
         context.commit('SET_ROLE', userData.role)
