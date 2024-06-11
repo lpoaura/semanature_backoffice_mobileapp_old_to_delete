@@ -6,6 +6,7 @@ import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { addDemande, addUser } from './utils/queries'
 import { getUserInfo } from './utils/queries'
+import { unOffuscate } from './utils/encrypt'
 
 const store = createStore({
   plugins: [createPersistedState()],
@@ -42,15 +43,15 @@ const store = createStore({
     }
   },
   actions: {
-    register(context, { nickname, role, email, password }) {    
-      createUserWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        addUser(email, nickname, role, email)
 
-      })
-      .catch((error) => {
-        console.log(error)
-      })
+    async register(context, { nickname, role, email, password }) {    
+      try {
+        await createUserWithEmailAndPassword(auth, email, unOffuscate(password));
+        await addUser(email, nickname, role, email);
+      } catch (error) {
+        console.log(error);
+        throw error; // Vous pouvez également choisir de rejeter l'erreur pour la gérer plus tard
+      }
     },
     async demande(context, { nickname, role, email, password }){
       addDemande(nickname, role, email, password)

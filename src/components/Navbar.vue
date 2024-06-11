@@ -7,7 +7,10 @@
       <div id="name-container">
         <p v-if="nickname" class="name">{{ nickname }}</p>
       </div>
-      <div v-if="role==='admin' && route.path != '/demande'" id="disconnect-btn-container">
+      <div v-if="role==='admin' && route.path != '/demande'" id="disconnect-btn-container-request">
+        <div v-if="demandeCount != 0" class="notification">
+          <p class="notification-text">{{ demandeCount }}</p>
+        </div>
         <button id="request-btn" @click="gererDemande" role="link">Demande</button>
       </div>
       <div id="disconnect-btn-container">
@@ -19,10 +22,12 @@
 </template>
 
 <script>
-import { ref } from 'vue'
-// import { getUserInfo } from '@/utils/queries.js'
+import { ref, onMounted } from 'vue'
 import store from '@/store'
 import { useRoute, useRouter } from "vue-router"
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/firebaseConfig';
+
 
 export default {
 name: "NavBar",
@@ -34,6 +39,7 @@ name: "NavBar",
     const error = ref(null)
     const router = useRouter()
     const route = useRoute()
+    const demandeCount = ref(0);
 
     const gererDemande = async () => {
       if (role == "admin"){
@@ -51,7 +57,19 @@ name: "NavBar",
       }
     }
 
-    return { role, nickname, Logout, gererDemande, route}
+    const countDemande = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'demande'));
+        demandeCount.value = querySnapshot.size
+      } catch (error) {
+        return 0
+      }
+    }
+
+    onMounted(() => {
+      countDemande();
+    })
+    return { role, nickname, Logout, gererDemande, route, demandeCount}
   }
 };
 </script>
@@ -70,6 +88,10 @@ nav{
   color: white;
 }
 
+#disconnect-btn-container-request{
+  position: relative;
+  margin-right: 10px;
+}
 
 #disconnect-btn{
   font-size: 10px; 
@@ -114,6 +136,25 @@ nav{
 }
 
 .name{
+  color: white;
+}
+
+.notification{
+  display: flex;
+  justify-content: center; 
+  position: absolute; 
+  top: -3px;
+  right: -3px;
+  background-color: red;
+  width: 18px;
+  scale: 1;
+  border-radius: 9px;
+  border: 1px solid white;
+}
+
+.notification-text{
+  font-size: 12px;
+  margin: 0; 
   color: white;
 }
 

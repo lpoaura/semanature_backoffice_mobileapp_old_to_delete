@@ -59,7 +59,6 @@ export default {
     }
     return { computed, communes, commune, EditCommune, DeleteCommune }
 
-
   }
 
 };

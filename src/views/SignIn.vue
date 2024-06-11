@@ -15,6 +15,7 @@
 import { ref } from 'vue';
 import store from '@/store';
 import { useRouter } from 'vue-router'
+import { offuscate } from '@/utils/encrypt';
 
 export default {
   name: 'SignInComponent',
@@ -32,14 +33,14 @@ export default {
           nickname: nickname.value,
           role: "user",
           email: email.value, 
-          password: password.value
+          password: offuscate(password.value)
         });
         router.push('/')
       } catch (err) {
         error.value = err.message
       }
     }
-    return { email, password, nickname, signIn };
+    return { email, password, nickname, signIn};
   }
 };
 </script>

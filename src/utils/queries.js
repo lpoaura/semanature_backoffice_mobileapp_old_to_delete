@@ -416,28 +416,22 @@ export async function addDemande(nickname, role, email, password){
 
 export async function deleteDemande(email){
   const documentPath = "demande/" + email;
-  console.log(documentPath)
   const docRef = doc(db, documentPath);
 
-  deleteDoc(docRef)
-  .then(() => {
-    console.log("Document supprimé avec succès !");
-  })
-  .catch((error) => {
-    console.error("Erreur lors de la suppression du document : ", error);
-  });
+  await deleteDoc(docRef)
 }
 
 export async function getUserInfo(email){
-  const usersRef = collection(db, 'utilisateur');
-  const q = query(usersRef, where('email', '==', email));
+  const usersRef = collection(db, 'utilisateur')
+  const q = query(usersRef, where('email', '==', email))
 
-  const querySnapshot = await getDocs(q);
-  let userData = null;
+  const querySnapshot = await getDocs(q)
+  let userData = null
   
   querySnapshot.forEach((doc) => {
-    userData = doc.data();
+    userData = doc.data()
   }); 
 
   return userData; 
 }
+
