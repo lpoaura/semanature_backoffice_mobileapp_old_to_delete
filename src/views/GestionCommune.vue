@@ -34,7 +34,7 @@ export default {
   name: "GestionCommuneComponent",
 
   components:  {
-    Navbar,
+    Navbar
   },
 
   setup() {

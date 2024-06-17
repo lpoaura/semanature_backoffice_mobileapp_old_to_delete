@@ -395,7 +395,7 @@ export async function addUser(userId, nickname, role, email){
 
     await deleteDemande(email); 
   } catch(e) {
-    console.error("Error adding document : ", e);
+    console.error("Error adding document : ", e)
   } 
 }
 
@@ -407,16 +407,23 @@ export async function addDemande(nickname, role, email, password){
       role: role,
       email: email,
       password
-    });
+    })
 
   } catch(e) {
-    console.error("Error adding document : ", e);
+    console.error("Error adding document : ", e)
   } 
 }
 
 export async function deleteDemande(email){
-  const documentPath = "demande/" + email;
-  const docRef = doc(db, documentPath);
+  const documentPath = "demande/" + email
+  const docRef = doc(db, documentPath)
+
+  await deleteDoc(docRef)
+}
+
+export async function deleteUser(email){
+  const documentPath = "utilisateur/" + email
+  const docRef = doc(db, documentPath)
 
   await deleteDoc(docRef)
 }
@@ -435,3 +442,16 @@ export async function getUserInfo(email){
   return userData; 
 }
 
+export async function updateUserRole(email, newRole){
+  try {
+    // Référence au document de l'utilisateur
+    const userDocRef = doc(db, 'utilisateur', email);
+    
+    // Mettre à jour le rôle
+    await updateDoc(userDocRef, {
+      role: newRole
+    });
+  } catch (error) {
+    console.log(error)
+  }
+}

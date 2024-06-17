@@ -1,5 +1,5 @@
 <template>
-  <nav>
+  <nav >
     <div id="left-side-container">
       <p><a href="/gestioncommune">Backoffice Scrute la nature</a></p>
     </div>
@@ -36,6 +36,7 @@ name: "NavBar",
 
     const nickname = store.state.user.nickname
     const role = store.state.user.role
+    const logged = store.state.user.loggedIn
     const error = ref(null)
     const router = useRouter()
     const route = useRoute()
@@ -69,7 +70,7 @@ name: "NavBar",
     onMounted(() => {
       countDemande();
     })
-    return { role, nickname, Logout, gererDemande, route, demandeCount}
+    return { role, nickname, Logout, gererDemande, route, demandeCount, logged }
   }
 };
 </script>

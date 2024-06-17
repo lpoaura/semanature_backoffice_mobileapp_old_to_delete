@@ -1,5 +1,5 @@
 <template>
-<Navbar/>
+<Navbar />
 <h1 id="title">Liste des demandes</h1> 
 <p v-if="isLoading">Chargement...</p>
 <div v-if="demandesLength > 0" class="demande-list-container">
@@ -21,13 +21,27 @@
 </div>
 
 <h1 id="title">Chercher utilisateur</h1> 
+<p v-if="isLoadingUser">Chargement...</p>
 <div>
   <input class="findUser" v-model="searchQuery" type="text" placeholder="Rentrer email">
-  <div v-if="user != null" class="">
-    <p>{{ user.email }}</p>
-  </div>
-  <div v-else>
-    Pas d'utilisateur sous ce nom 
+  <div class="demande-list-container">
+    <div v-if="userSearched != null && userSearched.role != 'deleted'" class="demande-container" style="background-color: lightgreen;" >
+    <div class="demande-nickname">
+            <p>{{ userSearched.nickname }} </p>
+        </div>
+        <div class="demande-email">
+            <p>{{ userSearched.email }}</p>
+        </div>
+
+        <div class="btn-add-container" v-if="userSearched.email != userConnectedEmail">
+            <button class="btn-add" v-if="userSearched.role == 'user'" @click="updateRole(userSearched.email, 'admin')">Promouvoir</button>
+            <button class="btn-add" v-if="userSearched.role == 'admin'" @click="updateRole(userSearched.email, 'user')">Rétrograder</button>
+            <button class="btn-delete" @click="delUser(userSearched.email, 'deleted')">Supprimer</button>
+        </div>
+    </div>
+    <div class="noDemande" v-else>
+      Pas d'utilisateur sous ce nom 
+    </div>
   </div>
 </div>
    
@@ -39,78 +53,149 @@
 import { ref, onMounted, watch } from 'vue';
 import { db } from '@/firebaseConfig';
 import { collection, getDocs } from 'firebase/firestore';
-import Navbar from '@/components/Navbar.vue';
 import store from '@/store';
 import { deleteDemande } from '@/utils/queries';
 import { getUserInfo } from '@/utils/queries';
+import showNotification from '../components/Notification';
+import { updateUserRole } from '@/utils/queries';
+import Navbar from '@/components/Navbar.vue';
 
 export default {
   name: 'demandeComponent',
   components:  {
-    Navbar,
+    Navbar
   },
   setup() {
     const demandes = ref([])
     const isLoading = ref(false)
+    const isLoadingUser = ref(false)
     const demandesLength = ref(0)
-    const searchQuery = ref('');
-    const user = ref(null)
+    const searchQuery = ref('')
+    const userSearched = ref(null)
+    const userConnectedEmail = store.state.user.email
 
+
+    // Get the demande
     const fetchDemandes = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, 'demande'))
         demandesLength.value = querySnapshot.size
-
         demandes.value = [];
         querySnapshot.forEach((doc) => {
           demandes.value.push(doc.data());
         });
-
       } catch (error) {
-        console.error('Error fetching demandes: ', error)
+        showNotification(2000, "Problème lors du chargement des demandes")
       }
     };
+
+    // Register the user
     const addDemande = async (nickname, role, email, password) => {
       isLoading.value = true 
         try {
+            // Register the user
             await store.dispatch('register', {
                 nickname: nickname,
                 role: "user",
                 email: email, 
                 password: password,
-            }).then(() => {
+            })
+            .then(() => {
+              isLoading.value = false 
+              showNotification(3000, "Ajout de l'utilisateur effectué", "success")
+            })
+            .catch(() => {
+              isLoading.value = false
+              showNotification(5000, "Problème lors de l'ajout de cet utilisateur, veuillez contacter l'administrateur")
+            })
+
+            await deleteDemande(email)
+
+            // Reload the demande section 
+            isLoading.value = true 
+            await fetchDemandes()
+            .then(() => {
               isLoading.value = false 
             })
-            isLoading.value = true 
-            await fetchDemandes().then(() => {
-              isLoading.value = false 
-            }); 
+            .catch(() => {
+              isLoading.value = false
+            })
         } catch (error) {
             console.log(error)
         }
       }
 
+
+    // Delete a demande
     const deleteCall = async (email) => {
       isLoading.value = true 
-      await deleteDemande(email).then(() => {
+      await deleteDemande(email)
+      .then(() => {
         isLoading.value = false
+        showNotification(3000, "Demande supprimé ", "success")
+      })
+      .catch(() => {
+        isLoading.value = false
+        showNotification(2000, "Nous avons pas reussi à supprimer cette demande")
       })
       await fetchDemandes()
     }
-
+    
+    // Get the user according to the input 
     watch(searchQuery, (newValue) => {
       if (newValue) {
         getUserInfo(newValue).then((data) => {
-          user.value = data
+          userSearched.value = data
         })
       }
     });
+
+    // Delete a user unable, can not longer connect 
+    const delUser = async (email, newRole) => {
+      isLoadingUser.value = true
+      await updateUserRole(email, newRole)
+      .then(() => {
+        isLoadingUser.value = false
+        showNotification(3000, "Ajout de l'utilisateur effectué.", "success")
+      })
+      .catch(() => {
+        isLoadingUser.value = false
+        showNotification(2000, "Nous avons pas reussi à supprimer cette l'utilisateur")
+      }) 
+    }
+
+    async function updateRole(email, newRole) {
+      isLoadingUser.value = true
+      updateUserRole(email, newRole)
+      .then(() => {
+        isLoadingUser.value = false
+        showNotification(3000, "Nouveau rôle donné à l'utilisateur", "success")
+      })
+      .catch(() => {
+        isLoadingUser.value = false
+        showNotification(2000, "Nous avons pas reussi à promulguer l'utilisateur en administrateur")
+      })
+    }
 
     onMounted(() => {
       fetchDemandes()
     })
 
-    return { demandes, addDemande, deleteCall, fetchDemandes, isLoading, demandesLength, searchQuery, user }
+    return { 
+      demandes, 
+      addDemande, 
+      deleteCall, 
+      fetchDemandes, 
+      isLoading, 
+      isLoadingUser, 
+      demandesLength, 
+      searchQuery, 
+      userSearched, 
+      store, 
+      userConnectedEmail,
+      delUser,
+      updateRole
+    }
   },
 }
 </script>
