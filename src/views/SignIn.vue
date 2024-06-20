@@ -16,6 +16,7 @@ import { ref } from 'vue';
 import store from '@/store';
 import { useRouter } from 'vue-router'
 import { offuscate } from '@/utils/encrypt';
+import showNotification from '@/components/Notification';
 
 export default {
   name: 'SignInComponent',
@@ -27,6 +28,11 @@ export default {
     const router = useRouter()
 
     const signIn = async () => {
+
+      if (password.value.length < 6) {
+        showNotification(5000, "Le mot de passe doit contenir au moins 6 caractères.")
+        return;
+      }
 
       try {
         await store.dispatch('demande', {

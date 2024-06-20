@@ -60,6 +60,22 @@
               label="Légende" @input="updateLegende($event.target.value, 3)"></v-textarea>
           </v-col>
         </v-row>
+
+        <div class="audio-container">
+          <div>
+            <h3>Télécharger un fichier audio</h3>
+          </div>
+          <div>
+            <input type="file" @change="onFileChange" accept="audio/*">
+          </div>
+          <div v-if="etape.audio_url">
+            <p>Audio existant</p>
+            <audio controls>
+              <source :src="etape.audio_url" type="audio/mp3">
+              Votre navigateur ne supporte pas l'élément audio.
+            </audio>
+          </div>
+        </div>
       </div>
 
     </v-col>
@@ -77,6 +93,8 @@
 import { uploadMultipleImages } from '../../utils/UploadImage.js'
 import { modifyEtapeInParcours } from '../../utils/queries.js'
 import ImagePicker from '../../components/ImagePicker.vue'
+import { uploadAudio } from "@/utils/UploadAudio"
+
 export default {
   components: { ImagePicker },
   name: "EditPyramideComponent",
@@ -85,11 +103,13 @@ export default {
       etape: {},
       parcoursId: String,
       hasimagechanged: [],
+      hasaudiochanged: false, 
       imagepicked: false,
       bytesArray: [],
       image_url: [],
       loaded: false,
       legende: ['', '', '', ''],
+      audio: null
     }
   },
   methods: {
@@ -105,6 +125,15 @@ export default {
     updateBytes(bytesArray, index) {
       this.bytesArray[index] = bytesArray
       this.hasimagechanged[index] = true
+    },
+    onFileChange() {
+      const file = event.target.files[0];
+      if (file && file.type.startsWith('audio/')) {
+        this.audio = file;
+        this.hasaudiochanged = true
+      } else {
+        alert("Veuillez sélectionner un fichier audio valide.");
+      }
     },
     async getInfos() {
       this.parcoursId = this.$route.query.parcoursId
@@ -137,6 +166,10 @@ export default {
         //Upload images
         if (byteArray_tab.length == 4) {
           await uploadMultipleImages(byteArray_tab, "image_jeu", this.etapeId, this.parcoursId)
+        }
+
+        if(this.audio != null && this.hasaudiochanged){
+          await uploadAudio(this.audio, "son/", this.etapeId, this.parcoursId )
         }
       }
       catch (err) {
@@ -183,4 +216,12 @@ export default {
   gap: 10px;
   align-items: center;
   height: max-content;
-}</style>
+}
+
+.audio-container{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+</style>

@@ -370,6 +370,16 @@ export async function deleteEtapeInParcours(id_parcours, id_etape, data_etapes){
           console.log(error);
         });
       }
+
+      if(data_etapes[indexEtape].etape.audio_url !== ""){
+        const etapeRef = ref(storage, 'son/'+ id_etape +'.mp3');
+        // Suppression du fichier
+        deleteObject(etapeRef).then(() => {
+
+        }).catch((error) => {
+          console.log(error);
+        });
+      }
     }
 
     // Mis à jour localement de l'ordre des étapes à partir de l'index de l'étape supprimée

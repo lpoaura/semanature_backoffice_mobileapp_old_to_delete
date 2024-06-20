@@ -14,7 +14,7 @@ export function uploadAudio(audioFile, docName, fileName, id_parcours) {
     }
 
     // Upload du fichier dans le dossier <docName> avec le nom <fileName>
-    const storageRef = ref(storage, docName + "/" + id_parcours + "/" + fileName + '_' + Date.now() + '.mp3')
+    const storageRef = ref(storage, docName + "/" + fileName + '.mp3')
     const metadata = {
         contentType: 'audio/mpeg'
     }
