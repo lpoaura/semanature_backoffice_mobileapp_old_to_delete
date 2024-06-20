@@ -7,12 +7,22 @@
       <v-col>
         <h3 align="center"> Paramètres du parcours</h3>
         <v-textarea label="Nom du parcours" rows="1" variant="outlined" no-resize required autofocus
-          v-model="titre"></v-textarea>
+          v-model="titre">
+        </v-textarea>
+        <div class="coordonee">
+          <div class="longitude">
+              <v-textarea label="Latitude" rows="1" variant="outlined" no-resize required v-model="latitude"></v-textarea>
+          </div>
+          <div class="latitude">
+            <v-textarea label="Longitude" rows="1" variant="outlined" no-resize required v-model="longitude"></v-textarea>
+          </div>
+        </div>
         <br>
         <v-textarea label="Description du parcours" required auto-grow v-model="description" />
         <br>
-        <v-combobox clearable label="Difficulté" required v-model="difficulte"
-          :items="['Très facile', 'Facile', 'Moyen', 'Difficile', 'Très difficile']"></v-combobox>
+        <v-combobox clearable label="Difficulté" required v-model="difficulte" 
+          :items="['Très facile', 'Facile', 'Moyen', 'Difficile', 'Très difficile']">
+        </v-combobox>
         <br>
         <div class="timeSelectContainer">
           <label class="label"> Durée du parcours: </label>
@@ -23,6 +33,14 @@
       <v-col>
         <ImagePicker @imageUpdated="(image) => this.image = image"
           @bytesUpdated="(bytesArray) => this.bytesarray = bytesArray" />
+        <h3 align="center">Carte interactive </h3>
+        <div style="height:400px; width:400px">
+          <l-map id='map' ref="map" :zoom="zoom" :center="[latitude, longitude]">
+            <l-tile-layer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base"
+              name="Carte de la ville"></l-tile-layer>
+            <l-marker draggable @update:lat-lng="Updatelatlng" :lat-lng="[latitude, longitude]"></l-marker>
+          </l-map>
+        </div>
       </v-col>
     </v-row>
     <br><br>
@@ -42,8 +60,14 @@
 import { createParcours } from '../../utils/queries.js'
 import { uploadImage } from '../../utils/UploadImage.js'
 import ImagePicker from '../../components/ImagePicker.vue'
+import { LMap, LTileLayer, LMarker } from "@vue-leaflet/vue-leaflet";
 export default {
-  components: { ImagePicker },
+  components: { 
+    ImagePicker,
+    LMap,
+    LTileLayer, 
+    LMarker
+  },
   name: "CreateParcoursInCommune",
   data() {
     return {
@@ -59,7 +83,10 @@ export default {
       heure: '0',
       minute: '00',
       hours: Array.from({ length: 8 }, (_, i) => i.toString()),
-      minutes: Array.from({ length: 12 }, (_, i) => (i * 5).toString().padStart(2, '0'))
+      minutes: Array.from({ length: 12 }, (_, i) => (i * 5).toString().padStart(2, '0')), 
+      longitude:  4.850000, 
+      latitude: 45.750000, 
+      zoom: 13
     }
   },
   methods: {
@@ -70,7 +97,9 @@ export default {
         titre: this.titre,
         difficulte: this.difficulte,
         duree: this.heure + 'h' + this.minute,
-        image_url: ''
+        image_url: '', 
+        longitude: this.longitude, 
+        latitude: this.latitude
       }
       const id_parcours = await createParcours(obj);
       try {
@@ -90,8 +119,13 @@ export default {
       }
 
       this.$router.push('/editcommune/' + this.commune)
-    }
+    },
+    Updatelatlng(event) {
+      this.latitude = event.lat
+      this.longitude = event.lng
+    },
   },
+  
   mounted() {
     this.commune = this.$router.currentRoute.value.params.commune;
   },
@@ -123,4 +157,11 @@ export default {
   background-color: #E7ECEE;
   border-radius: 5px;
 }
+
+.coordonee{
+  display: flex;
+  flex-direction: row; 
+  gap: 10px;
+}
+
 </style>

@@ -83,6 +83,14 @@
         <img v-if="image" class="preview" :src="image" />
         <img v-else class="preview" id="addedimage" />
       </div>
+      <div class="audio-container">
+        <div>
+          <h3>Télécharger un fichier audio</h3>
+        </div>
+        <div>
+          <input type="file" @change="onFileChange" accept="audio/*">
+        </div>
+      </div>
     </v-col>
   </v-row>
   <br><br>
@@ -104,6 +112,7 @@ import { mdiMagnify } from '@mdi/js';
 import { mdiPlus } from '@mdi/js';
 import { JeuQCM } from "../../utils/etapeCreator.js"
 import { getParcoursContents, addEtapeInParcours } from "../../utils/queries.js"
+import { uploadAudio } from '@/utils/UploadAudio';
 
 export default {
   name: "qcmComponent",
@@ -126,7 +135,7 @@ export default {
       parcours: {},
       reponses: [],
       radio: 0,
-
+      audio: null
     }
   },
   methods: {
@@ -156,6 +165,15 @@ export default {
       }
       this.imagepicked = true
     },
+    onFileChange() {
+      const file = event.target.files[0];
+      if (file && file.type.startsWith('audio/')) {
+        this.audio = file;
+
+      } else {
+        alert("Veuillez sélectionner un fichier audio valide.");
+      }
+    },
     validate() {
       for (let i in this.especes) {
         if (this.especes[i].selected) {
@@ -174,7 +192,19 @@ export default {
       }
     },
     async createEtape() {
-      var qcm = new JeuQCM(JSON.parse(JSON.stringify(this.parcours)).etapes.length + 1, this.titre, '', this.texte, this.reponses, this.radio, this.titreBonneReponse, this.titreMauvaiseReponse, this.texteApresReponse)
+      var qcm = new JeuQCM(
+        JSON.parse(JSON.stringify(this.parcours)).etapes.length + 1, 
+        this.titre,
+        "", 
+        "",
+        this.texte, 
+        this.reponses, 
+        this.radio, 
+        this.titreBonneReponse, 
+        this.titreMauvaiseReponse, 
+        this.texteApresReponse
+      )
+      console.log(qcm.generateFirestoreData())
       try {
         const id = await addEtapeInParcours(this.$router.currentRoute.value.params.parcours, qcm.generateFirestoreData())
         if (this.image != '') {
@@ -186,6 +216,10 @@ export default {
           if (this.bytesarray) {
             await uploadImage(this.bytesarray, "image_etape", id, this.$router.currentRoute.value.params.parcours)
           }
+        }
+
+        if(this.audio != null){
+          await uploadAudio(this.audio, "son/" + this.$router.currentRoute.value.params.parcours, id, this.$router.currentRoute.value.params.parcours)
         }
       }
       catch (err) {
@@ -265,4 +299,13 @@ export default {
 
 .center-div {
   width: 80%;
-}</style>
+}
+
+.audio-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+</style>

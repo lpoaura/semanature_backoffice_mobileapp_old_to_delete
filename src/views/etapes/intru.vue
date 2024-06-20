@@ -194,6 +194,15 @@
             <img v-else class="preview" id="addedimage3" />
             <v-text-field v-model="legende[3]" label="Légende" outlined></v-text-field>
           </div>
+
+          <div class="audio-container">
+            <div>
+              <h3>Télécharger un fichier audio</h3>
+            </div>
+            <div>
+              <input type="file" @change="onFileChange" accept="audio/*">
+            </div>
+        </div>
         </v-col>
       </v-row>
     </v-col>
@@ -217,6 +226,7 @@ import { mdiMagnify } from '@mdi/js';
 import { mdiPlus } from '@mdi/js';
 import { JeuIntrus } from "../../utils/etapeCreator.js"
 import { getParcoursContents, addEtapeInParcours } from "../../utils/queries.js"
+import { uploadAudio } from "@/utils/UploadAudio";
 
 export default {
   name: "intruComponent",
@@ -239,7 +249,7 @@ export default {
       espece: '',
       parcour: {},
       especesselected: [],
-
+      audio: null
     }
   },
   methods: {
@@ -269,6 +279,14 @@ export default {
       this.imagepicked[j] = true;
 
     },
+    onFileChange() {
+      const file = event.target.files[0];
+      if (file && file.type.startsWith('audio/')) {
+        this.audio = file;
+      } else {
+        alert("Veuillez sélectionner un fichier audio valide.");
+      }
+    },
     validate(j) {
       for (let i in this.especes) {
         if (this.especes[i].selected) {
@@ -288,7 +306,7 @@ export default {
       }
     },
     async createEtape() {
-      var intru = new JeuIntrus(JSON.parse(JSON.stringify(this.parcour)).etapes.length + 1, this.titre, this.question, ['', '', '', ''], this.legende, this.radio, this.titreBonneReponse, this.titreMauvaiseReponse, this.texteApresReponse)
+      var intru = new JeuIntrus(JSON.parse(JSON.stringify(this.parcour)).etapes.length + 1, this.titre, this.question, ['', '', '', ''], this.legende, this.radio, this.titreBonneReponse, this.titreMauvaiseReponse, this.texteApresReponse, '')
       var byteArray_tab = ['', '', '', '']
       try {
         const id = await addEtapeInParcours(this.$router.currentRoute.value.params.parcours, intru.generateFirestoreData())
@@ -307,6 +325,11 @@ export default {
         if (byteArray_tab.length == 4) {
           await uploadMultipleImages(byteArray_tab, "image_jeu", id, this.$router.currentRoute.value.params.parcours)
         }
+
+        if(this.audio != null){
+          await uploadAudio(this.audio, "son/", id, this.$router.currentRoute.value.params.parcours )
+        }
+
       }
       catch (err) {
         console.log(err)
@@ -392,4 +415,12 @@ export default {
   width: 85%;
   height: 100%
 }
+
+.audio-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 </style>

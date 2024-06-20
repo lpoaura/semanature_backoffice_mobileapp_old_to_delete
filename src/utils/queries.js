@@ -3,7 +3,7 @@
 // S'occupe également de supprimer les fichiers dans "Storage" qui sont liés à certaines données dans Firestore
 
 import { db } from '../firebaseConfig';
-import { setDoc, doc, updateDoc, getDoc, getDocs, collection, addDoc, deleteDoc, query, where } from "firebase/firestore";
+import { setDoc, doc, updateDoc, getDoc, getDocs, collection, addDoc, deleteDoc, query, where, GeoPoint } from "firebase/firestore";
 import { storage } from '../firebaseConfig';
 import { ref, deleteObject } from 'firebase/storage';
 
@@ -163,7 +163,8 @@ export async function createParcours(p_obj){
         difficulte: p_obj.difficulte,
         duree: p_obj.duree,
         image_url: p_obj.image_url !== "" ? p_obj.image_url : "",
-        brouillon: true
+        brouillon: true, 
+        gps: new GeoPoint(p_obj.latitude, p_obj.longitude)
     });
    
     // Retourne le doc id autogénéré
@@ -312,6 +313,15 @@ export async function updateImageUrlEtape(id, url, id_parcours){
   await updateDoc(etapeRef, {
     image_url: url
   });
+}
+
+export async function updateAudioUrlEtape(id_parcours, url, id){
+  const etapeRef = doc(db,"parcours",id_parcours, "etape", id);
+
+  await updateDoc(etapeRef, {
+    audio_url: url
+  });
+
 }
 
 // Méthode d'écriture qui met à jour uniquement le champs 'images_tab' d'un jeu (jeu_intrus) avec les urls passées en paramètre
