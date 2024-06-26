@@ -23,8 +23,8 @@
         <br>
         <div class="timeSelectContainer">
           <label class="label"> Durée du parcours: </label>
-          <v-combobox v-model="heure" :items="hours" label="Heure" required></v-combobox>
-          <v-combobox v-model="minute" :items="minutes" label="Minute" required></v-combobox>
+          <v-combobox v-model="heure" :items="hours" label="Heures" required></v-combobox>
+          <v-combobox v-model="minute" :items="minutes" label="Minutes" required></v-combobox>
         </div>
         <br>
       </v-col>
