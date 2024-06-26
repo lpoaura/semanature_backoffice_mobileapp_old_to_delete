@@ -50,7 +50,7 @@ export default {
         router.push('/gestioncommune')
       }
       catch (err) {
-        error.value = err.message
+        error.value = "Mauvais identifiant ou mot de passe"
       }
     }
     return { Login, email, password, error }
