@@ -1,6 +1,7 @@
 /* eslint-disable */
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from '../views/Login.vue';
+import SignIn from '../views/SignIn.vue'; 
 import GestionCommune from '../views/GestionCommune.vue';
 import EditCommune from '../views/commune/EditCommune.vue';
 import CreateCommune from '../views/commune/CreateCommune.vue';
@@ -53,6 +54,7 @@ import editCharade from '../views/editetapes/editCharade.vue'
 import editCompterimage from '../views/editetapes/editCompterImage.vue'
 import editRebus from '../views/editetapes/editRebus.vue'
 import editEcogeste from '../views/editetapes/editEcogeste.vue'
+import demande from '@/views/demande.vue';
 
 
 const routes = [
@@ -65,6 +67,11 @@ const routes = [
     path: '/',
     name: 'login',
     component: Login
+  },
+  {
+    path: '/signIn',
+    name: 'signIn',
+    component: SignIn 
   },
   {
     path: '/editcommune/:commune',
@@ -304,6 +311,11 @@ const routes = [
     path: '/transistate',
     name: 'transistate',
     component: transistate
+  },
+  {
+    path: '/demande',
+    name: 'demande',
+    component: demande
   }
 
 ]
@@ -316,12 +328,16 @@ import store from '@/store';
 
 router.beforeEach((to, from, next) => {
   // Vérifiez si la route nécessite une authentification / s'il ne s'agit pas d'admin
-  const requiresAuth = to.name != "login";
+  const requiresAuth = to.name != "login" && to.name != "signIn"
   // Si la route nécessite une authentification et l'utilisateur n'est pas connecté
   if (requiresAuth && !store.getters.user.loggedIn) {
     next('/'); // Redirigez l'utilisateur vers la page de connexion
   } else {
-    next(); // Permettez l'accès à la route
+    if(to.name == "demande" && store.getters.user.role != "admin"){
+      next("/gestioncommune")
+    }else{
+      next(); // Permettez l'accès à la route
+    }
   }
 });
 export default router

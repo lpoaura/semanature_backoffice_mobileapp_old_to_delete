@@ -49,9 +49,9 @@ class Etape {
 
 // eslint-disable-next-line no-unused-vars
 class JeuInfo extends Etape {
-    constructor(ordre, nom, image_url, texte){
+    constructor(ordre, nom, image_url, audio_url, texte){
         // Commun attributes
-        super(ordre, TypeEtape.jeu_info, nom, image_url);
+        super(ordre, TypeEtape.jeu_info, nom, image_url, audio_url);
 
         // Specific attributes
         this.texte = texte;
@@ -63,6 +63,7 @@ class JeuInfo extends Etape {
             type: this.type,
             nom: this.nom,
             image_url: this.image_url,
+            audio_url: this.audio_url == undefined ? "" : this.audio_url,
             texte: this.texte,
         }
         return data;
@@ -71,8 +72,8 @@ class JeuInfo extends Etape {
 
 // eslint-disable-next-line no-unused-vars
 class JeuBlague extends Etape {
-    constructor(ordre, nom, image_url, texte){
-        super(ordre, TypeEtape.jeu_blague, nom, image_url);
+    constructor(ordre, nom, image_url, audio_url, texte){
+        super(ordre, TypeEtape.jeu_blague, nom, image_url, audio_url);
         this.texte = texte;
     }
 
@@ -82,6 +83,7 @@ class JeuBlague extends Etape {
             type: this.type,
             nom: this.nom,
             image_url: this.image_url,
+            audio_url: this.audio_url == undefined ? "" : this.audio_url,
             texte: this.texte,
         }
         return data;
@@ -90,9 +92,9 @@ class JeuBlague extends Etape {
 
 // eslint-disable-next-line no-unused-vars
 class JeuQCM extends Etape {
-    constructor(ordre, nom, image_url, question, reponses_tab, index_bonneReponse, titreSiBonneReponse, titreSiMauvaiseReponse, texteApresReponse) {
+    constructor(ordre, nom, image_url, audio_url, question, reponses_tab, index_bonneReponse, titreSiBonneReponse, titreSiMauvaiseReponse, texteApresReponse) {
         // Commun attributes
-        super(ordre, TypeEtape.jeu_qcm, nom, image_url);
+        super(ordre, TypeEtape.jeu_qcm, nom, image_url, audio_url);
 
         // Specific attributes
         this.question = question;
@@ -101,6 +103,7 @@ class JeuQCM extends Etape {
         this.titreSiBonneReponse = titreSiBonneReponse;
         this.titreSiMauvaiseReponse = titreSiMauvaiseReponse; 
         this.texteApresReponse = texteApresReponse;
+        this.audio_url = audio_url
     }
 
     generateFirestoreData() {
@@ -110,12 +113,13 @@ class JeuQCM extends Etape {
             type: this.type,
             nom: this.nom,
             image_url: this.image_url,
+            audio_url: this.audio_url,
             question: this.question,
             reponses_tab: [
-                this.reponses_tab[0],
-                this.reponses_tab[1],
-                this.reponses_tab[2],
-                this.reponses_tab[3]
+                this.reponses_tab[0] == undefined ? "" : this.reponses_tab[0],
+                this.reponses_tab[1] == undefined ? "" : this.reponses_tab[1],
+                this.reponses_tab[2] == undefined ? "" : this.reponses_tab[2],
+                this.reponses_tab[3] == undefined ? "" : this.reponses_tab[3] 
             ],
             index_bonneReponse: this.index_bonneReponse,
             titreSiBonneReponse: this.titreSiBonneReponse,
@@ -129,9 +133,9 @@ class JeuQCM extends Etape {
 
 // eslint-disable-next-line no-unused-vars
 class JeuIntrus extends Etape {
-    constructor(ordre, nom, question, images_tab, legende_tab, index_bonneReponse, titreSiBonneReponse, titreSiMauvaiseReponse, texteApresReponse) {
+    constructor(ordre, nom, question, images_tab, legende_tab, index_bonneReponse, titreSiBonneReponse, titreSiMauvaiseReponse, texteApresReponse, audio_url) {
         // Commun attributes
-        super(ordre, TypeEtape.jeu_intrus, nom, '');
+        super(ordre, TypeEtape.jeu_intrus, nom, '', audio_url);
 
         // Specific attributes
         this.question = question;
@@ -166,6 +170,7 @@ class JeuIntrus extends Etape {
             titreSiBonneReponse: this.titreSiBonneReponse,
             titreSiMauvaiseReponse: this.titreSiMauvaiseReponse,
             texteApresReponse: this.texteApresReponse,
+            audio_url: this.audio_url == undefined ? "" : this.audio_url,
         }
 
         return data;
@@ -174,9 +179,9 @@ class JeuIntrus extends Etape {
 
 // eslint-disable-next-line no-unused-vars
 class JeuCesar extends Etape {
-    constructor(ordre, nom, image_url, legende, question, texteBrut, decalage, titreSiBonneReponse, titreSiMauvaiseReponse, texteApresReponse) {
+    constructor(ordre, nom, image_url, question, texteBrut, decalage, titreSiBonneReponse, titreSiMauvaiseReponse, texteApresReponse) {
         // Commun attributes
-        super(ordre, TypeEtape.jeu_cesar, nom, image_url);
+        super(ordre, TypeEtape.jeu_cesar, nom, image_url );
 
         // Specific attributes
         this.question = question;
@@ -193,12 +198,13 @@ class JeuCesar extends Etape {
             type: this.type,
             nom: this.nom,
             image_url: this.image_url,
+            audio_url: "", 
             question: this.question,
             texteBrut: this.texteBrut,
             decalage: this.decalage,
             titreSiBonneReponse: this.titreSiBonneReponse,
             titreSiMauvaiseReponse: this.titreSiMauvaiseReponse,
-            texteApresReponse: this.texteApresReponse,
+            texteApresReponse: this.texteApresReponse ,
         }
         return data;
     }
@@ -206,9 +212,9 @@ class JeuCesar extends Etape {
 
 // eslint-disable-next-line no-unused-vars
 class JeuPyramide extends Etape {
-    constructor(ordre, nom, image_url, question, nombre, titreSiBonneReponse, titreSiMauvaiseReponse, texteApresReponse) {
+    constructor(ordre, nom, image_url, audio_url, question, nombre, titreSiBonneReponse, titreSiMauvaiseReponse, texteApresReponse) {
         // Commun attributes
-        super(ordre, TypeEtape.jeu_pyramide, nom, image_url);
+        super(ordre, TypeEtape.jeu_pyramide, nom, image_url, audio_url);
 
         // Specific attributes
         this.question = question;
@@ -224,6 +230,7 @@ class JeuPyramide extends Etape {
             type: this.type,
             nom: this.nom,
             image_url: this.image_url,
+            audio_url: this.audio_url == undefined ? "" : this.audio_url,
             question: this.question,
             nombre: this.nombre,
             titreSiBonneReponse: this.titreSiBonneReponse,
@@ -237,9 +244,9 @@ class JeuPyramide extends Etape {
 
 // eslint-disable-next-line no-unused-vars
 class JeuCode extends Etape {
-    constructor(ordre, nom, image_url, texte, code){
+    constructor(ordre, nom, image_url, audio_url, texte, code){
         // Commun attributes
-        super(ordre, TypeEtape.jeu_code, nom, image_url);
+        super(ordre, TypeEtape.jeu_code, nom, image_url, audio_url);
 
         // Specific attributes
         this.texte = texte;
@@ -252,6 +259,7 @@ class JeuCode extends Etape {
             type: this.type,
             nom: this.nom,
             image_url: this.image_url,
+            audio_url: this.audio_url == undefined ? "" : this.audio_url,
             texte: this.texte,
             code: this.code,
         }
@@ -261,9 +269,9 @@ class JeuCode extends Etape {
 
 // eslint-disable-next-line no-unused-vars
 class JeuCharade extends Etape {
-    constructor(ordre, nom, image_url, charade, reponse, titreSiBonneReponse, titreSiMauvaiseReponse, texteApresReponse){
+    constructor(ordre, nom, image_url, audio_url, charade, reponse, titreSiBonneReponse, titreSiMauvaiseReponse, texteApresReponse){
         // Commun attributes
-        super(ordre, TypeEtape.jeu_charade, nom, image_url);
+        super(ordre, TypeEtape.jeu_charade, nom, image_url, audio_url);
 
         // Specific attributes
         this.charade = charade;
@@ -279,6 +287,7 @@ class JeuCharade extends Etape {
             type: this.type,
             nom: this.nom,
             image_url: this.image_url,
+            audio_url: this.audio_url || "",
             charade: this.charade,
             reponse: this.reponse,
             titreSiBonneReponse: this.titreSiBonneReponse,
@@ -291,9 +300,9 @@ class JeuCharade extends Etape {
 
 // eslint-disable-next-line no-unused-vars
 class JeuCompterImage extends Etape {
-    constructor(ordre, nom, image_url, texte, reponse, titreSiBonneReponse, titreSiMauvaiseReponse, texteApresReponse){
+    constructor(ordre, nom, image_url, audio_url, texte, reponse, titreSiBonneReponse, titreSiMauvaiseReponse, texteApresReponse){
         // Commun attributes
-        super(ordre, TypeEtape.jeu_compterimage, nom, image_url);
+        super(ordre, TypeEtape.jeu_compterimage, nom, image_url, audio_url);
 
         // Specific attributes
         this.texte = texte;
@@ -309,6 +318,7 @@ class JeuCompterImage extends Etape {
             type: this.type,
             nom: this.nom,
             image_url: this.image_url,
+            audio_url: this.audio_url == undefined ? "" : this.audio_url,
             texte: this.texte,
             reponse: this.reponse,
             titreSiBonneReponse: this.titreSiBonneReponse,
@@ -321,9 +331,9 @@ class JeuCompterImage extends Etape {
 
 // eslint-disable-next-line no-unused-vars
 class JeuRebus extends Etape {
-    constructor(ordre, nom, image_url, question, reponse, titreSiBonneReponse, titreSiMauvaiseReponse, texteApresReponse){
+    constructor(ordre, nom, image_url, audio_url, question, reponse, titreSiBonneReponse, titreSiMauvaiseReponse, texteApresReponse){
         // Commun attributes
-        super(ordre, TypeEtape.jeu_rebus, nom, image_url);
+        super(ordre, TypeEtape.jeu_rebus, nom, image_url, audio_url);
 
         // Specific attributes
         this.question = question;
@@ -339,6 +349,7 @@ class JeuRebus extends Etape {
             type: this.type,
             nom: this.nom,
             image_url: this.image_url,
+            audio_url: this.audio_url == undefined ? "" : this.audio_url,
             question: this.question,
             reponse: this.reponse,
             titreSiBonneReponse: this.titreSiBonneReponse,
@@ -351,8 +362,8 @@ class JeuRebus extends Etape {
 
 // eslint-disable-next-line no-unused-vars
 class JeuEcogeste extends Etape {
-    constructor(ordre, nom, image_url, texte){
-        super(ordre, TypeEtape.jeu_ecogeste, nom, image_url);
+    constructor(ordre, nom, image_url, audio_url, texte){
+        super(ordre, TypeEtape.jeu_ecogeste, nom, image_url, audio_url);
         this.texte = texte;
     }
 
@@ -362,6 +373,7 @@ class JeuEcogeste extends Etape {
             type: this.type,
             nom: this.nom,
             image_url: this.image_url,
+            audio_url: this.audio_url == undefined ? "" : this.audio_url,
             texte: this.texte,
         }
         return data;
@@ -370,9 +382,9 @@ class JeuEcogeste extends Etape {
 
 // eslint-disable-next-line no-unused-vars
 class TransiInfo extends Etape {
-    constructor(ordre, nom, image_url, texte){
+    constructor(ordre, nom, image_url, audio_url, texte){
         // Commun attributes
-        super(ordre, TypeEtape.transi_info, nom, image_url);
+        super(ordre, TypeEtape.transi_info, nom, image_url, audio_url);
 
         // Specific attributes
         this.texte = texte;
@@ -384,6 +396,7 @@ class TransiInfo extends Etape {
             type: this.type,
             nom: this.nom,
             image_url: this.image_url,
+            audio_url: this.audio_url == undefined ? "" : this.audio_url,
             texte: this.texte,
         }
 

@@ -3,7 +3,7 @@
 // S'occupe également de supprimer les fichiers dans "Storage" qui sont liés à certaines données dans Firestore
 
 import { db } from '../firebaseConfig';
-import { setDoc, doc, updateDoc, getDoc, getDocs, collection, addDoc, deleteDoc, query, where } from "firebase/firestore";
+import { setDoc, doc, updateDoc, getDoc, getDocs, collection, addDoc, deleteDoc, query, where, GeoPoint } from "firebase/firestore";
 import { storage } from '../firebaseConfig';
 import { ref, deleteObject } from 'firebase/storage';
 
@@ -163,7 +163,8 @@ export async function createParcours(p_obj){
         difficulte: p_obj.difficulte,
         duree: p_obj.duree,
         image_url: p_obj.image_url !== "" ? p_obj.image_url : "",
-        brouillon: true
+        brouillon: true, 
+        gps: new GeoPoint(p_obj.latitude, p_obj.longitude)
     });
    
     // Retourne le doc id autogénéré
@@ -314,6 +315,15 @@ export async function updateImageUrlEtape(id, url, id_parcours){
   });
 }
 
+export async function updateAudioUrlEtape(id_parcours, url, id){
+  const etapeRef = doc(db,"parcours",id_parcours, "etape", id);
+
+  await updateDoc(etapeRef, {
+    audio_url: url
+  });
+
+}
+
 // Méthode d'écriture qui met à jour uniquement le champs 'images_tab' d'un jeu (jeu_intrus) avec les urls passées en paramètre
 // Cette méthode est appelée une fois que les images ont été upload sur "Storage" via updateMultipleImages dans UploadImage .js 
 // et que l'on a obtenu l'url de téléchargement
@@ -360,6 +370,16 @@ export async function deleteEtapeInParcours(id_parcours, id_etape, data_etapes){
           console.log(error);
         });
       }
+
+      if(data_etapes[indexEtape].etape.audio_url !== ""){
+        const etapeRef = ref(storage, 'son/'+ id_etape +'.mp3');
+        // Suppression du fichier
+        deleteObject(etapeRef).then(() => {
+
+        }).catch((error) => {
+          console.log(error);
+        });
+      }
     }
 
     // Mis à jour localement de l'ordre des étapes à partir de l'index de l'étape supprimée
@@ -380,5 +400,78 @@ export async function deleteEtapeInParcours(id_parcours, id_etape, data_etapes){
   }
   else {
     console.log("L'étape n'a pas été trouvée dans les données étapes et n'a donc pas pu être supprimée");
+  }
+}
+
+
+export async function addUser(userId, nickname, role, email){
+  try {
+    // Ajout d'une nouveau document dans la collection "commune" avec comme identifiant le nom en minuscule
+    await setDoc(doc(db, "utilisateur", (userId)), {
+      nickname: nickname,
+      role: role,
+      email: email,
+    });
+
+    await deleteDemande(email); 
+  } catch(e) {
+    console.error("Error adding document : ", e)
+  } 
+}
+
+export async function addDemande(nickname, role, email, password){
+  try {
+    // Ajout d'une nouveau document dans la collection "commune" avec comme identifiant le nom en minuscule
+    await setDoc(doc(db, "demande", (email)), {
+      nickname: nickname,
+      role: role,
+      email: email,
+      password
+    })
+
+  } catch(e) {
+    console.error("Error adding document : ", e)
+  } 
+}
+
+export async function deleteDemande(email){
+  const documentPath = "demande/" + email
+  const docRef = doc(db, documentPath)
+
+  await deleteDoc(docRef)
+}
+
+export async function deleteUser(email){
+  const documentPath = "utilisateur/" + email
+  const docRef = doc(db, documentPath)
+
+  await deleteDoc(docRef)
+}
+
+export async function getUserInfo(email){
+  const usersRef = collection(db, 'utilisateur')
+  const q = query(usersRef, where('email', '==', email))
+
+  const querySnapshot = await getDocs(q)
+  let userData = null
+  
+  querySnapshot.forEach((doc) => {
+    userData = doc.data()
+  }); 
+
+  return userData; 
+}
+
+export async function updateUserRole(email, newRole){
+  try {
+    // Référence au document de l'utilisateur
+    const userDocRef = doc(db, 'utilisateur', email);
+    
+    // Mettre à jour le rôle
+    await updateDoc(userDocRef, {
+      role: newRole
+    });
+  } catch (error) {
+    console.log(error)
   }
 }
