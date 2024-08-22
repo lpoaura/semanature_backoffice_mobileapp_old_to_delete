@@ -88,6 +88,7 @@ export default {
     async mounted() {
         getInseeCodeFromCommune(this.$route.params.commune).then((res) => {
             this.code_insee = res;
+            console.log(this.code_insee)
             this.getTaxonsGroupes()
         });
         this.display = true;

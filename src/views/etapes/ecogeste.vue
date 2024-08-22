@@ -52,6 +52,14 @@
         <img v-if="image" class="preview" :src="image" />
         <img v-else class="preview" id="addedimage" />
       </div>
+      <div class="audio-container">
+        <div>
+          <h3>Télécharger un fichier audio</h3>
+        </div>
+        <div>
+          <input type="file" @change="onFileChange" accept="audio/*">
+        </div>
+      </div>
     </v-col>
   </v-row>
   <br>
@@ -71,6 +79,7 @@ import { mdiMagnify } from '@mdi/js';
 import { mdiPlus } from '@mdi/js';
 import { JeuEcogeste } from "../../utils/etapeCreator.js"
 import { getParcoursContents, addEtapeInParcours } from "../../utils/queries.js"
+import { uploadAudio } from "@/utils/UploadAudio";
 
 export default {
   name: "blagueComponent",
@@ -87,6 +96,7 @@ export default {
       especes: [],
       espece: '',
       parcour: {},
+      audio: null
     };
   },
   methods: {
@@ -117,6 +127,14 @@ export default {
       }
       this.imagepicked = true;
     },
+    onFileChange() {
+      const file = event.target.files[0];
+      if (file && file.type.startsWith('audio/')) {
+        this.audio = file;
+      } else {
+        alert("Veuillez sélectionner un fichier audio valide.");
+      }
+    },
     validate() {
       for (let i in this.especes) {
         if (this.especes[i].selected) {
@@ -135,7 +153,7 @@ export default {
       }
     },
     async createEtape() {
-      var ecogeste = new JeuEcogeste(JSON.parse(JSON.stringify(this.parcour)).etapes.length + 1, this.titre, '', this.texte);
+      var ecogeste = new JeuEcogeste(JSON.parse(JSON.stringify(this.parcour)).etapes.length + 1, this.titre, '', '', this.texte);
       try {
         const id = await addEtapeInParcours(this.$router.currentRoute.value.params.parcours, ecogeste.generateFirestoreData());
         if (this.image != '') {
@@ -148,6 +166,10 @@ export default {
           if (this.bytesarray) {
             await uploadImage(this.bytesarray, "image_etape", id, this.$router.currentRoute.value.params.parcours);
           }
+        }
+
+        if(this.audio != null){
+          await uploadAudio(this.audio, "son/", id, this.$router.currentRoute.value.params.parcours )
         }
       }
       catch (err) {
@@ -217,5 +239,12 @@ export default {
   color: white;
   background-color: black;
   display: inline-block;
+}
+
+.audio-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 </style>

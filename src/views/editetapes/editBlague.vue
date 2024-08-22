@@ -15,6 +15,21 @@
       <ImagePicker :previousImageUrl="etape.image_url" @imageUpdated="(image) => updateImage(image)"
         @bytesUpdated="(bytesArray) => updateBytes(bytesArray)" />
     </v-col>
+    <div class="audio-container">
+        <div>
+            <h3>Télécharger un fichier audio</h3>
+          </div>
+          <div>
+            <input type="file" @change="onFileChange" accept="audio/*">
+          </div>
+          <div v-if="etape.audio_url">
+            <p>Audio existant</p>
+            <audio controls>
+              <source :src="etape.audio_url" type="audio/mp3">
+              Votre navigateur ne supporte pas l'élément audio.
+          </audio>
+        </div>
+      </div>
   </v-row>
   <div align="center">
     <button @click="EditEtape()" type="submit" width="100%" class="btn bg-green">Modifier l'étape</button>
@@ -29,6 +44,8 @@
 import { uploadImage } from '../../utils/UploadImage.js'
 import { modifyEtapeInParcours } from '../../utils/queries.js'
 import ImagePicker from '../../components/ImagePicker.vue'
+import { uploadAudio } from "@/utils/UploadAudio"
+
 export default {
   components: { ImagePicker },
 
@@ -38,10 +55,12 @@ export default {
       etape: {},
       parcoursId: String,
       hasimagechanged: false,
+      hasaudiochanged: false, 
       imagepicked: false,
       bytesArray: '',
       image_url: '',
-      loaded: false
+      loaded: false, 
+      audio: null
     }
   },
   methods: {
@@ -59,6 +78,15 @@ export default {
       this.loaded = true
       this.etapeId = JSON.parse(this.$route.query.etape).id
     },
+    onFileChange() {
+      const file = event.target.files[0];
+      if (file && file.type.startsWith('audio/')) {
+        this.audio = file;
+        this.hasaudiochanged = true
+      } else {
+        alert("Veuillez sélectionner un fichier audio valide.");
+      }
+    },
     async EditEtape() {
       try {
         if (this.image_url !== '' && this.hasimagechanged) { //FROM API IMAGE         
@@ -70,6 +98,10 @@ export default {
           if (this.bytesArray && this.hasimagechanged) {
             uploadImage(this.bytesArray, "image_etape", this.etapeId, this.parcoursId)
           }
+        }
+
+        if(this.audio != null && this.hasaudiochanged){
+          await uploadAudio(this.audio, "son/", this.etapeId, this.parcoursId )
         }
       } catch (error) {
         alert("La taille de l'image dépasse la limite autorisée (2Mo Max)")
