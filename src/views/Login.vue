@@ -18,8 +18,11 @@
         <br>
         <button type="submit" class="btn greenbtn bg-green">Login</button>
       </form>
+      <div id="linkContainer">
+        <a id="linkCreate" href="/signIn">Pas de compte? Cliquez ici </a>
+      </div>
     </div>
-
+    
   </div>
 </template>
 
@@ -47,7 +50,7 @@ export default {
         router.push('/gestioncommune')
       }
       catch (err) {
-        error.value = err.message
+        error.value = "Mauvais identifiant ou mot de passe"
       }
     }
     return { Login, email, password, error }
@@ -61,6 +64,7 @@ export default {
   margin-left: auto;
   margin-right: auto;
   width: 50%;
+  text-align: center;
 }
 
 .lpo-img {
@@ -91,4 +95,17 @@ export default {
   display: block;
   margin-left: auto;
   margin-right: auto;
-}</style>
+}
+*
+#linkContainer {
+  margin-top: 20px;
+}
+
+#linkCreate{
+  text-decoration: underline;
+  color: rgb(0, 166, 255);
+  font-size: 13px;
+  text-align: center;
+}
+
+</style>

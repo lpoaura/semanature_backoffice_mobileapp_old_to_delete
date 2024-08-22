@@ -5,20 +5,21 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
-  authDomain: process.env.VUE_APP_FIREBASE_AUTH_DOMAIN,
-  // databaseURL: process.env.VUE_APP_FIREBASE_DATABASE_URL,
-  projectId: process.env.VUE_APP_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.VUE_APP_FIREBASE_APP_ID,
+    apiKey: "AIzaSyAbt_ZCs9w1LPlxhJbrKjyAx0xwee9SZ5o",
+    authDomain: "lpo-mobileapp-firebase.firebaseapp.com",
+    projectId: "lpo-mobileapp-firebase",
+    storageBucket: "lpo-mobileapp-firebase.appspot.com",
+    messagingSenderId: "555551483811",
+    appId: "1:555551483811:web:74bafe5cc3a8388f711c16",
+    databaseURL: "https://lpo-mobileapp.firebaseio.com"
 };
+  
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
 //initialize firebase auth
-const auth = getAuth();
+const auth = getAuth(app);
 
 //Initialize firestore database
 const db = getFirestore(app);

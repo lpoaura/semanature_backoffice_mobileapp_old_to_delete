@@ -17,7 +17,13 @@ const vuetify = createVuetify({
 })
 
 
-createApp(App).use(router).use(store).use(vuetify).use(draggable).component("draggable",draggable).
-component("svg-icon", SvgIcon).component("LinkInsert",LinkInsert)
+createApp(App)
+.use(router)
+.use(store)
+.use(vuetify)
+.use(draggable)
+.component("draggable",draggable)
+.component("svg-icon", SvgIcon)
+.component("LinkInsert",LinkInsert)
 .mount('#app')
 

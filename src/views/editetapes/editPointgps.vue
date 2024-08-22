@@ -23,7 +23,7 @@
     </v-col>
     <v-col>
       <h3 align="center">Carte interactive </h3>
-      <div style="height:400px; width:400px">
+      <div style="height:400px; width:400px" v-if="etape.latitude != undefined && etape.longitude != undefined">
         <l-map id='map' ref="map" :zoom="zoom" :center="[etape.latitude, etape.longitude]">
           <l-tile-layer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" layer-type="base"
             name="Carte de la ville"></l-tile-layer>
@@ -34,6 +34,22 @@
     <v-col v-if="loaded">
       <ImagePicker :previousImageUrl="etape.image_url" @imageUpdated="(image) => updateImage(image)"
         @bytesUpdated="(bytesArray) => updateBytes(bytesArray)" />
+
+        <div class="audio-container">
+        <div>
+            <h3>Télécharger un fichier audio</h3>
+          </div>
+          <div>
+            <input type="file" @change="onFileChange" accept="audio/*">
+          </div>
+          <div v-if="etape.audio_url">
+            <p>Audio existant</p>
+            <audio controls>
+              <source :src="etape.audio_url" type="audio/mp3">
+              Votre navigateur ne supporte pas l'élément audio.
+          </audio>
+        </div>
+      </div>
     </v-col>
   </v-row>
   <div align="center">
@@ -51,6 +67,8 @@ import { modifyEtapeInParcours } from '../../utils/queries.js'
 import "leaflet/dist/leaflet.css";
 import { LMap, LTileLayer, LMarker } from "@vue-leaflet/vue-leaflet";
 import ImagePicker from '../../components/ImagePicker.vue'
+import { uploadAudio } from "@/utils/UploadAudio"
+
 export default {
   name: "editPointGPS",
   components: {
@@ -62,10 +80,12 @@ export default {
       etape: {},
       parcoursId: String,
       hasimagechanged: false,
+      hasaudiochanged: false, 
       imagepicked: false,
       bytesArray: '',
       image_url: '',
-      loaded: false
+      loaded: false,
+      audio: null
     }
   },
   methods: {
@@ -80,6 +100,15 @@ export default {
     updateBytes(bytesArray) {
       this.bytesArray = bytesArray
       this.hasimagechanged = true
+    },
+    onFileChange() {
+      const file = event.target.files[0];
+      if (file && file.type.startsWith('audio/')) {
+        this.audio = file;
+        this.hasaudiochanged = true
+      } else {
+        alert("Veuillez sélectionner un fichier audio valide.");
+      }
     },
     async getInfos() {
       this.parcoursId = this.$route.query.parcoursId
@@ -98,6 +127,10 @@ export default {
           if (this.bytesArray && this.hasimagechanged) {
             uploadImage(this.bytesArray, "image_etape", this.etapeId, this.parcoursId)
           }
+        }
+
+        if(this.audio != null && this.hasaudiochanged){
+          await uploadAudio(this.audio, "son/", this.etapeId, this.parcoursId )
         }
       } catch (error) {
         alert("La taille de l'image dépasse la limite autorisée (2Mo Max)")
@@ -189,4 +222,11 @@ export default {
 .center-div {
   width: 80%;
 }
+
+.audio-container{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 </style>
